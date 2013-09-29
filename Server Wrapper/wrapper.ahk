@@ -99,9 +99,9 @@ Gui, Show, h450
 return
 
 StartServer:
+IsRunning = 1
 Run, %A_ScriptDir%\server\Game.Server.exe
 Sleep, 1500
-IsRunning = 1
 ; This section wraps the log output to the listview in the main tab
 ; Needs tons of improvement - doubtful that it even works
 Loop, read, %A_ScriptDir%\server\Game.Server.log
@@ -117,6 +117,7 @@ return
 StopServer:
 ; Kills game process
 Process, Close, Game.Server.exe
+IsRunning=0
 return
 
 ; Handling subroutines
@@ -175,6 +176,33 @@ if (IsPrivate = 0) {
     IniWrite, true, %A_ScriptDir%\server\GameServer.ini, General, Online
     } else if (IsPrivate = 1) {
     IniWrite, false, %A_ScriptDir%\server\GameServer.ini, General, Online
+    }
+    
+; If server is running, disable all edits
+if (IsRunning = 1) {
+    GuiControl, Disable, Skyrim
+    GuiControl, Disable, Oblivion
+    GuiControl, Disable, ServerName
+    GuiControl, Disable, ServerLanguage
+    GuiControl, Disable, Set server as private
+    GuiControl, Disable, ServerPassword
+    GuiControl, Disable, ServerAddress
+    GuiControl, Disable, ServerPort
+    GuiControl, Disable, ServerGUID
+    GuiControl, Disable, Generate GUID
+    GuiControl, Disable, Reset Settings
+    } else if (IsRunning = 0) {
+    GuiControl, Enable, Skyrim
+    GuiControl, Enable, Oblivion
+    GuiControl, Enable, ServerName
+    GuiControl, Enable, ServerLanguage
+    GuiControl, Enable, Set server as private
+    GuiControl, Enable, ServerPassword
+    GuiControl, Enable, ServerAddress
+    GuiControl, Enable, ServerPort
+    GuiControl, Enable, ServerGUID
+    GuiControl, Enable, Generate GUID
+    GuiControl, Enable, Reset Settings
     }
 return
 
