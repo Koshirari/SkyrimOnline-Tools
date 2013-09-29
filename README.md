@@ -1,4 +1,4 @@
-SkyrimOnline-ServerWrapper
+SkyrimOnline-Tools
 ==========================
 
-Server Wrapper for Skyrim Online
+A collection of tools for Skyrim Online
