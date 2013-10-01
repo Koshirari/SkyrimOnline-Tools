@@ -9,6 +9,7 @@ SetWorkingDir %A_ScriptDir%\server\ ; Needed for Game.Server to read from the pr
 ; Default values for use later
 DefaultGame = Skyrim
 DefaultName = Skyrim Online Server
+DefaultMessage = Default server message
 DefaultAddress = 127.0.0.1
 DefaultPort = 14242
 DefaultIsPrivate = 0
@@ -26,6 +27,7 @@ If (IniSelectedGame = "Skyrim"){
     IsOblivion = 1
     IsSkyrim = 0
     }
+IniRead, IniWelcomeMessage, %A_ScriptDir%\server\GameServer.ini, General, WelcomeMessage
 IniRead, IniServerName, %A_ScriptDir%\server\GameServer.ini, General, Name
 IniRead, IniAddress, %A_ScriptDir%\server\GameServer.ini, General, Address
 IniRead, IniPort, %A_ScriptDir%\server\GameServer.ini, General, Port
@@ -43,6 +45,7 @@ If (IniLanguage = "English") {
     }
 IniRead, IniPassword, %A_ScriptDir%\server\GameServer.ini, General, Password
 IniRead, IniGUID, %A_ScriptDir%\server\GameServer.ini, Master, GUID
+
 ; Create tabs
 Gui, Add, Tab2, gSaveOptions w630 h385, Server|Configuration
 ; Server tab
@@ -60,6 +63,8 @@ Gui, Add, Radio, Checked%IsSkyrim% vSetGameTypeSkyrim, Skyrim
 Gui, Add, Radio, Checked%IsOblivion% vSetGameTypeOblivion, Oblivion
 Gui, Add, Text,, Server Name:
 Gui, Add, Edit, vServerName Limit40 gSetServerName, %IniServerName%
+Gui, Add, Text,, Welcome Message:
+Gui, Add, Edit, vWelcomeMessage gSetWelcomeMessage Multi, %IniWelcomeMessage%
 Gui, Add, Text,, Server Language: 
 Gui, Add, DropDownList, vServerLanguage Choose%SelectedLanguage% AltSubmit, English|Polish
 Gui, Add, Text,, Private Server
@@ -77,6 +82,8 @@ Gui, Add, Button, gSetDefaults, Reset Settings
 ; Move config tab controls
 Gui, Submit, NoHide
 GuiControl, Move, ServerName, w200
+GuiControl, Move, Welcome Message, y135
+GuiControl, Move, WelcomeMessage, w200 h50 y155
 GuiControl, Move, Private Server, x275 y35
 GuiControl, Move, IsPrivate, x275 y55 w200
 GuiControl, Move, Password:, x275 y75
@@ -85,9 +92,13 @@ GuiControl, Move, ServerPassword, x275 y95 w200
 if (SetPrivate = 0) {
     GuiControl, Disable, ServerPassword
     }
+GuiControl, Move, Address, y270
+GuiControl, Move, ServerAddress, w200 y290
+GuiControl, Move, Port, y315
+GuiControl, Move, ServerPort, w200 y335
 
-GuiControl, Move, ServerAddress, w200
-GuiControl, Move, ServerPort, w200
+GuiControl, Move, Server Language, y225
+GuiControl, Move, ServerLanguage, y245
 
 GuiControl, Move, GUID:, x275 y145
 GuiControl, Move, ServerGUID, x275 y175 w300
@@ -144,12 +155,14 @@ IfMsgBox, No
     return
 IniWrite, %DefaultGame%, %A_ScriptDir%\server\GameServer.ini, General, Game
 IniWrite, %DefaultName%, %A_ScriptDir%\server\GameServer.ini, General, Name
+IniWrite, %DefaultMessage%, %A_ScriptDir%\server\GameServer.ini, General, WelcomeMessage
 IniWrite, %DefaultPassword%, %A_ScriptDir%\server\GameServer.ini, General, Password
 IniWrite, %DefaultAddress%, %A_ScriptDir%\server\GameServer.ini, General, Address
 IniWrite, %DefaultPort%, %A_ScriptDir%\server\GameServer.ini, General, Port
 IniWrite, %DefaultGUID%, %A_ScriptDir%\server\GameServer.ini, Master, GUID
 GuiControl,, SetGameTypeSkyrim, 1
 GuiControl,, ServerName, %DefaultName%
+GuiControl,, WelcomeMessage, %DefaultMessage%
 GuiControl,, ServerLanguage, %DefaultLanguage%
 GuiControl,, IsPrivate, 0
 GuiControl,, ServerPassword, %DefaultPassword%
@@ -183,6 +196,7 @@ if (IsRunning = 1) {
     GuiControl, Disable, Skyrim
     GuiControl, Disable, Oblivion
     GuiControl, Disable, ServerName
+    GuiControl, Disable, WelcomeMessage
     GuiControl, Disable, ServerLanguage
     GuiControl, Disable, Set server as private
     GuiControl, Disable, ServerPassword
@@ -195,6 +209,7 @@ if (IsRunning = 1) {
     GuiControl, Enable, Skyrim
     GuiControl, Enable, Oblivion
     GuiControl, Enable, ServerName
+    GuiControl, Enable, WelcomeMessage
     GuiControl, Enable, ServerLanguage
     GuiControl, Enable, Set server as private
     GuiControl, Enable, ServerPassword
@@ -211,20 +226,28 @@ Gui, Submit, NoHide
 IniWrite, %ServerName%, %A_ScriptDir%\server\GameServer.ini, General, Name 
 return
 
+SetWelcomeMessage:
+Gui, Submit, NoHide
+IniWrite, %WelcomeMessage%, %A_ScriptDir%\server\GameServer.ini, General, WelcomeMessage
+return
+
 SetServerPassword:
 Gui, Submit, NoHide
 IniWrite, %ServerPassword%, %A_ScriptDir%\server\GameServer.ini, General, Password
 return
 
 SetServerAddress:
+Gui, Submit, NoHide
 IniWrite, %ServerAddress%, %A_ScriptDir%\server\GameServer.ini, General, Address
 return
 
 SetServerPort:
+Gui, Submit, NoHide
 IniWrite, %ServerPort%, %A_ScriptDir%\server\GameServer.ini, General, Port
 return
 
 SetServerGUID:
+Gui, Submit, NoHide
 IniWrite, %ServerGUID%, %A_ScriptDir%\server\GameServer.ini, Master, GUID
 return
 
